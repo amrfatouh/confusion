@@ -6,10 +6,11 @@ const DishDetail = ({ dish }) => {
         return(
             <ul className="list-unstyled">
                 <li>{eachComment.comment}</li>
-                <li>-- {eachComment.author}, {eachComment.date}</li>
+                <li>-- {eachComment.author}, {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(eachComment.date)))}</li>
             </ul>
         )
     })
+
     return (
         <div className="row">
             <div className="col-12 col-md-5 m-1">
