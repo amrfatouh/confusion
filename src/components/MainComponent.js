@@ -3,8 +3,10 @@ import '../App.css';
 import { Navbar, NavbarBrand } from 'reactstrap';
 import Menu from './MenuComponent'
 import { DISHES } from '../shared/dishes';
+import Home from './HomeComponent'
 import Header from './HeaderComponent';
 import Footer from './FooterComponent';
+import { Switch, Route, Redirect } from 'react-router-dom'
 
 class Main extends Component {
     constructor(props) {
@@ -15,7 +17,7 @@ class Main extends Component {
         }
     }
 
-    onDishSelect (dishId) {
+    onDishSelect(dishId) {
         this.setState({
             selectedDishId: dishId
         });
@@ -25,9 +27,11 @@ class Main extends Component {
         return (
             <div className="App">
                 <Header />
-                <Menu dishes={this.state.dishes}
-                    onClick={(dishId) => this.onDishSelect(dishId)}
-                    selectedDish={this.state.dishes.find((dish) => dish.id === this.state.selectedDishId )} />
+                <Switch>
+                    <Route path="/home" component={Home} />
+                    <Route path="/menu" component={() => <Menu dishes={this.state.dishes} />} />
+                    <Redirect to="/home" />
+                </Switch>
                 <Footer />
             </div>
         );
