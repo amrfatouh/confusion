@@ -1,19 +1,9 @@
 import React from 'react'
 import { Card, CardImg, CardImgOverlay, CardTitle, Breadcrumb, BreadcrumbItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { Loading } from './LoadingComponent';
 
-function Menu({ dishes, onClick, selectedDish }) {
-
-    // function renderDish(dish) {
-    //     if (dish != null) {
-    //         return (
-    //             <DishDetail dish={dish} />
-    //         );
-    //     } else {
-    //         return (<div></div>);
-    //     }
-    // };
-
+function Menu({ dishes, isLoading, errMess }) {
     function RenderMenuItem({ dish }) {
         return (
             <Card key={dish.id}>
@@ -34,23 +24,43 @@ function Menu({ dishes, onClick, selectedDish }) {
             </div>
         );
     });
-    return (
-        <div className="container">
-            <div className="row">
-                <Breadcrumb>
-                    <BreadcrumbItem><Link to="/home">Home</Link></BreadcrumbItem>
-                    <BreadcrumbItem active>Menu</BreadcrumbItem>
-                </Breadcrumb>
-                <div className="col-12">
-                    <h3>Menu</h3>
-                    <hr />
+    if (isLoading) {
+        return (
+            <div className='container'>
+                <div className='row'>
+                    <Loading />
                 </div>
             </div>
-            <div className="row">
-                {menu}
+        )
+    }
+    else if (errMess) {
+        return (
+            <div className='container'>
+                <div className='row'>
+                    <h4>{errMess}</h4>
+                </div>
             </div>
-        </div>
-    )
+        )
+    }
+    else {
+        return (
+            <div className="container">
+                <div className="row">
+                    <Breadcrumb>
+                        <BreadcrumbItem><Link to="/home">Home</Link></BreadcrumbItem>
+                        <BreadcrumbItem active>Menu</BreadcrumbItem>
+                    </Breadcrumb>
+                    <div className="col-12">
+                        <h3>Menu</h3>
+                        <hr />
+                    </div>
+                </div>
+                <div className="row">
+                    {menu}
+                </div>
+            </div>
+        )
+    }
 }
 
 export default Menu

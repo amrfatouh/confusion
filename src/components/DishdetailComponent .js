@@ -1,15 +1,18 @@
-import React, {Component} from 'react'
-import { Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem, 
-    Button, Modal, ModalHeader, ModalBody, FormGroup, Label } from 'reactstrap';
+import React, { Component } from 'react'
+import {
+    Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem,
+    Button, Modal, ModalHeader, ModalBody, FormGroup, Label
+} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Loading } from './LoadingComponent';
 
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
 const minLength = (len) => (val) => val && (val.length >= len);
 
 class CommentForm extends Component {
 
-    constructor (props) {
+    constructor(props) {
         super(props);
         this.state = {
             isModalOpen: false
@@ -51,23 +54,23 @@ class CommentForm extends Component {
                             <FormGroup>
                                 <Label htmlFor="author">Your Name</Label>
                                 <Control.text model='.author' id='author' placeholder='Your Name' className="form-control"
-                                validators={{
-                                    minLength: minLength(3),
-                                    maxLength: maxLength(15)
-                                }}/>
+                                    validators={{
+                                        minLength: minLength(3),
+                                        maxLength: maxLength(15)
+                                    }} />
                                 <Errors
-                                        className="text-danger"
-                                        model=".author"
-                                        show="touched"
-                                        messages={{
-                                            minLength: 'Must be greater than 2 characters',
-                                            maxLength: 'Must be 15 characters or less'
-                                        }}
-                                    />
+                                    className="text-danger"
+                                    model=".author"
+                                    show="touched"
+                                    messages={{
+                                        minLength: 'Must be greater than 2 characters',
+                                        maxLength: 'Must be 15 characters or less'
+                                    }}
+                                />
                             </FormGroup>
                             <FormGroup>
                                 <Label htmlFor='comment'>Comment</Label>
-                                <Control.textarea model='.comment' rows='6' id='comment' className="form-control"/>
+                                <Control.textarea model='.comment' rows='6' id='comment' className="form-control" />
                             </FormGroup>
                             <Button color='primary' className='mt-3'>Submit</Button>
                         </LocalForm>
@@ -78,16 +81,37 @@ class CommentForm extends Component {
     }
 }
 
-function RenderDish({ dish }) {
-    return (
-        <Card>
-            <CardImg top src={dish.image} alt={dish.name} />
-            <CardBody>
-                <CardTitle>{dish.name}</CardTitle>
-                <CardText>{dish.description}</CardText>
-            </CardBody>
-        </Card>
-    )
+function RenderDish({ dish, isLoading, errMess }) {
+    if (isLoading) {
+        return (
+            <div className='container'>
+                <div className='row'>
+                    <Loading />
+                </div>
+            </div>
+        )
+    }
+    else if (errMess) {
+        return (
+            <div className='container'>
+                <div className='row'>
+                    <h4>{errMess}</h4>
+                </div>
+            </div>
+        )
+    }
+    else if (dish != null) {
+        return (
+            <Card>
+                <CardImg top src={dish.image} alt={dish.name} />
+                <CardBody>
+                    <CardTitle>{dish.name}</CardTitle>
+                    <CardText>{dish.description}</CardText>
+                </CardBody>
+            </Card>
+        )
+    }
+
 }
 
 function RenderComments({ comments, dishId, addComment }) {
@@ -96,7 +120,7 @@ function RenderComments({ comments, dishId, addComment }) {
             <ul className="list-unstyled" key={eachComment.id}>
                 <li>{eachComment.comment}</li>
                 <li>-- {eachComment.author}, {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(eachComment.date)))}</li>
-                
+
             </ul>
         )
     })
@@ -109,13 +133,13 @@ function RenderComments({ comments, dishId, addComment }) {
     )
 }
 
-const DishDetail = ({ dish, comments, addComment }) => {
-    if(dish != null && comments != null) {
+const DishDetail = ({ dish, isLoading, errMess, comments, addComment }) => {
+    if (comments != null) {
         return (
             <div className="container">
                 <div className="row">
                     <Breadcrumb>
-    
+
                         <BreadcrumbItem><Link to="/menu">Menu</Link></BreadcrumbItem>
                         <BreadcrumbItem active>{dish.name}</BreadcrumbItem>
                     </Breadcrumb>
@@ -126,7 +150,7 @@ const DishDetail = ({ dish, comments, addComment }) => {
                 </div>
                 <div className="row">
                     <div className="col-12 col-md-5 m-1">
-                        <RenderDish dish={dish} />
+                        <RenderDish dish={dish} isLoading={isLoading} errMess={errMess} />
                     </div>
                     <div className="col-12 col-md-5 m-1">
                         <RenderComments comments={comments} dishId={dish.id} addComment={addComment} />
