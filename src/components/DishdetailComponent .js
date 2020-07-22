@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
+import { Stagger, Fade, FadeTransform } from 'react-animation-components'
 
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
 const minLength = (len) => (val) => val && (val.length >= len);
@@ -103,39 +104,48 @@ function RenderDish({ dish, isLoading, errMess }) {
     }
     else if (dish != null) {
         return (
-            <Card>
-                <CardImg top src={baseUrl + dish.image} alt={dish.name} />
-                <CardBody>
-                    <CardTitle>{dish.name}</CardTitle>
-                    <CardText>{dish.description}</CardText>
-                </CardBody>
-            </Card>
+            <FadeTransform
+                in
+                transformProps={{
+                    exitTransform: 'scale(0.5) translateY(-50%)'
+                }}>
+                <Card>
+                    <CardImg top src={baseUrl + dish.image} alt={dish.name} />
+                    <CardBody>
+                        <CardTitle>{dish.name}</CardTitle>
+                        <CardText>{dish.description}</CardText>
+                    </CardBody>
+                </Card>
+            </FadeTransform>
         )
     }
 
 }
 
 function RenderComments({ comments, dishId, postComment }) {
-    const renderedComments = comments.map((eachComment) => {
-        return (
-            <ul className="list-unstyled" key={eachComment.id}>
-                <li>{eachComment.comment}</li>
-                <li>-- {eachComment.author}, {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(eachComment.date)))}</li>
-
-            </ul>
-        )
-    })
     return (
         <div>
+            <Stagger in>
+                {comments.map((eachComment) => {
+                    return (
+                        <Fade in>
+                            <ul className="list-unstyled" key={eachComment.id}>
+                                <li>{eachComment.comment}</li>
+                                <li>-- {eachComment.author}, {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit' }).format(new Date(Date.parse(eachComment.date)))}</li>
+
+                            </ul>
+                        </Fade>
+                    )
+                })}
+            </Stagger>
             <h3>Comments</h3>
-            {renderedComments}
             <CommentForm dishId={dishId} postComment={postComment} />
         </div>
     )
 }
 
 const DishDetail = ({ dish, isLoading, errMess, comments, commentsErrMess, postComment }) => {
-    if (comments != null) {
+    if (comments != null && dish != null) {
         return (
             <div className="container">
                 <div className="row">
